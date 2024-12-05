@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="mn">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Данс Идэвхжүүлэлт</title>
+    <style>
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        background-color: #f4f7ff;
+        color: #1a1f36;
+        margin: 0;
+        padding: 30px;
+        line-height: 1.7;
+      }
+      .container {
+        max-width: 650px;
+        margin: 0 auto;
+        background: #ffffff;
+        padding: 50px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+        border-radius: 20px;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+      }
+      h1 {
+        background: linear-gradient(135deg, #4f46e5, #6366f1);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 32px;
+        margin-bottom: 30px;
+        text-align: center;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+      }
+      p {
+        margin: 18px 0;
+        font-size: 17px;
+        color: #4a5568;
+      }
+      .code {
+        display: block;
+        width: fit-content;
+        margin: 40px auto;
+        padding: 20px 40px;
+        font-size: 28px;
+        background: linear-gradient(135deg, #4f46e5, #6366f1);
+        color: #ffffff;
+        border-radius: 16px;
+        font-weight: 700;
+        letter-spacing: 3px;
+        box-shadow: 0 8px 20px rgba(79, 70, 229, 0.25);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .code:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 25px rgba(79, 70, 229, 0.35);
+      }
+      .signature {
+        margin-top: 40px;
+        padding-top: 30px;
+        border-top: 2px solid #f1f5f9;
+      }
+      .footer {
+        margin-top: 45px;
+        padding-top: 25px;
+        text-align: center;
+        color: #64748b;
+        font-size: 15px;
+        border-top: 2px solid #f1f5f9;
+      }
+      .logo {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+      .logo img {
+        max-width: 180px;
+        height: auto;
+      }
+      strong {
+        color: #1e293b;
+        font-weight: 600;
+      }
+      .highlight {
+        background: linear-gradient(
+          120deg,
+          rgba(79, 70, 229, 0.1) 0%,
+          rgba(99, 102, 241, 0.1) 100%
+        );
+        padding: 2px 6px;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="logo">
+        <!-- Add your company logo here -->
+        <!-- <img src="logo.png" alt="Company Logo"> -->
+      </div>
+      <h1>Баталгаажуулах код</h1>
+      <p>Сайн байна уу, <strong class="highlight"><%= name %></strong>!</p>
+      <p>
+        Бүртгүүлсэнд баярлалаа. Та доорх идэвхжүүлэлтийн кодыг ашиглан өөрийн
+        бүртгэлийг идэвхжүүлнэ үү:
+      </p>
+      <div class="code"><%= activationCode %></div>
+      <div class="signature">
+        <p>Хүндэтгэсэн,</p>
+        <p><strong>Танай Компани</strong></p>
+      </div>
+      <div class="footer">
+        <p>
+          &copy; <%= new Date().getFullYear() %> Манай Компани. Бүх эрх хуулиар
+          хамгаалагдсан.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

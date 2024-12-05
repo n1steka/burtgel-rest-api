@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model category {
+  id             Int        @id @default(autoincrement())
+  name           String?    @db.VarChar(255)
+  slug           String?    @db.VarChar(255)
+  description    String?
+  isactive       Boolean?
+  parentid       Int?
+  createdat      DateTime   @default(now()) @db.Timestamp(6)
+  updatedat      DateTime   @default(now()) @db.Timestamp(6)
+  products       products[]
+}
+
+model products {
+  id                 Int       @id @default(autoincrement())
+  ezemshigchiin_ner  String    @db.VarChar(255)
+  endDate            DateTime? @db.Timestamp(6)
+  Pc_mark           String    @db.VarChar(255)
+  cpu               String    @db.VarChar(255)
+  ram               String    @db.VarChar(255)
+  hhp               String    @db.VarChar(255)
+  mac_addres        String    @db.VarChar(255)
+  printer           String    @db.VarChar(255)
+  description       String?
+  bar_code          String    @db.VarChar(255)
+  createdat         DateTime  @default(now()) @db.Timestamp(6)
+  updatedat         DateTime  @default(now()) @db.Timestamp(6)
+  categoryid        Int
+  category           category  @relation(fields: [categoryid], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "products_category_fk")
+}
+
+model user {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(255)
+  email     String   @unique(map: "unique_email") @db.VarChar(255)
+  password  String   @db.VarChar(255)
+  role      String   @db.VarChar(255)
+  createdat DateTime @default(now()) @db.Timestamp(6)
+  updatedat DateTime @default(now()) @db.Timestamp(6)
+}

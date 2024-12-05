@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="mn">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Шинэ захиалга</title>
+    <style>
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, sans-serif;
+        background-color: #f4f7ff;
+        color: #1a1f36;
+        margin: 0;
+        padding: 30px;
+        line-height: 1.7;
+      }
+      .container {
+        max-width: 650px;
+        margin: 0 auto;
+        background: #ffffff;
+        padding: 50px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+        border-radius: 20px;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+      }
+      h1 {
+        background: linear-gradient(135deg, #4f46e5, #6366f1);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 32px;
+        margin-bottom: 30px;
+        text-align: center;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+      }
+      p {
+        margin: 18px 0;
+        font-size: 17px;
+        color: #4a5568;
+      }
+      .highlight {
+        background: linear-gradient(
+          120deg,
+          rgba(79, 70, 229, 0.1) 0%,
+          rgba(99, 102, 241, 0.1) 100%
+        );
+        padding: 2px 6px;
+        border-radius: 4px;
+        color: #1e293b;
+        font-weight: 600;
+      }
+      .signature {
+        margin-top: 40px;
+        padding-top: 30px;
+        border-top: 2px solid #f1f5f9;
+      }
+      .footer {
+        margin-top: 45px;
+        padding-top: 25px;
+        text-align: center;
+        color: #64748b;
+        font-size: 15px;
+        border-top: 2px solid #f1f5f9;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Шинэ захиалга</h1>
+      <p>Сайн байна уу, <strong class="highlight"><%= name %></strong>!</p>
+      <p>Захиалгын дугаар: <span class="highlight"><%= message %></span></p>
+      <p>
+        Таны захиалгын талбарын мэдээлэл:
+        <div class="highlight">
+          <% items.forEach(item => { %>
+            <div style="margin-bottom: 20px;">
+              <img src="<%= item.backgroundimageurl %>" alt="<%= item.name %>" style="width: 100px; height: 100px; object-fit: cover;">
+              <p>Бүтээгдэхүүний нэр: <%= item.name %></p>
+              <p>Үнэ: <%= item.unitprice %>₮</p>
+              <p>Тоо ширхэг: <%= item.quantity %></p>
+              <hr>
+            </div>
+          <% }); %>
+        </div>
+      </p>
+      <div class="signature">
+        <p>Хүндэтгэсэн,</p>
+        <p><strong>MY-TECH.mn Баг</strong></p>
+      </div>
+      <div class="footer">
+        <p>
+          &copy; <%= new Date().getFullYear() %> MY-TECH.mn. Бүх эрх хуулиар
+          хамгаалагдсан.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
