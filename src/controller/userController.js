@@ -49,25 +49,67 @@ export class UserController {
     }
   }
 
+  async detail(req, res, next) {
+    try {
+      const { id } = req.params;
+      const user = await userModel.get(id);
+      successResponse(res, 200, user, "User detail fetched successfully");
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  }
+
+  async getUsers(req, res, next) {
+    try {
+      let where = {};
+      if (req.query.name) {
+        where.name = {
+          contains: req.query.name,
+        };
+      }
+      if (req.query.email) {
+        where.email = {
+          contains: req.query.email,
+        };
+      }
+      const users = await userModel.list(where);
+      successResponse(res, 200, users, "Users fetched successfully");
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  }
+
   async create(req, res) {
     try {
+      const { id } = req.params;
       const { email, password, name } = req.body;
-
-      if (!email || !password || !name) {
-        return errorResponse(res, 400, "Email and password are required");
+      if(typeof id === "string")  { 
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const user = {
+          email,
+          password: hashedPassword,
+          name,
+          role: "user",
+        };
+        const createUser = await prisma.user.create({
+          data: user,
+        });
+        successResponse(res, 201, createUser, "User created successfully");
+      } else {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const user = {
+          email,
+          password: hashedPassword,
+          name,
+          role: "user",
+        };
+        const createUser = await prisma.user.create({
+          data: user,
+        });
+        successResponse(res, 201, createUser, "User created successfully");
       }
 
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const user = {
-        email,
-        password: hashedPassword,
-        name,
-        role: "user",
-      };
-      const createUser = await prisma.user.create({
-        data: user,
-      });
-      successResponse(res, 201, createUser, "User created successfully");
+
     } catch (error) {
       console.log(error);
       return errorResponse(res, 500, error.message);
