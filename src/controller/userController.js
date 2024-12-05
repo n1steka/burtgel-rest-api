@@ -68,7 +68,7 @@ export class UserController {
         };
       }
       if (req.query.email) {
-        where.email = {
+        where.email = { 
           contains: req.query.email,
         };
       }
@@ -83,33 +83,29 @@ export class UserController {
     try {
       const { id } = req.params;
       const { email, password, name } = req.body;
-      if(typeof id === "string")  { 
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const user = {
-          email,
-          password: hashedPassword,
-          name,
-          role: "user",
-        };
+      
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const userData = {
+        email,
+        password: hashedPassword,
+        name,
+        role: "user",
+      };
+
+      if (id === "new") {
         const createUser = await prisma.user.create({
-          data: user,
+          data: userData,
         });
         successResponse(res, 201, createUser, "User created successfully");
       } else {
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const user = {
-          email,
-          password: hashedPassword,
-          name,
-          role: "user",
-        };
-        const createUser = await prisma.user.create({
-          data: user,
+        const updateUser = await prisma.user.update({
+          where: {
+            id: parseInt(id)
+          },
+          data: userData
         });
-        successResponse(res, 201, createUser, "User created successfully");
+        successResponse(res, 200, updateUser, "User updated successfully");
       }
-
-
     } catch (error) {
       console.log(error);
       return errorResponse(res, 500, error.message);
