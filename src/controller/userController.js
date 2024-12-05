@@ -52,7 +52,7 @@ export class UserController {
   async detail(req, res, next) {
     try {
       const { id } = req.params;
-      const user = await userModel.get(id);
+      const user = await userModel.get(+id);
       successResponse(res, 200, user, "User detail fetched successfully");
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
@@ -72,7 +72,15 @@ export class UserController {
           contains: req.query.email,
         };
       }
-      const users = await userModel.list(where);
+      const users = await userModel.list({
+        where,
+        page: req.query.page || 1,
+        pageSize: req.query.pageSize || 10,
+        orderBy: {
+          createdat: "desc",
+        },
+      });
+      console.log(users);
       successResponse(res, 200, users, "Users fetched successfully");
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
@@ -91,7 +99,6 @@ export class UserController {
         name,
         role: "user",
       };
-
       if (id === "new") {
         const createUser = await prisma.user.create({
           data: userData,
