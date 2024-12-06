@@ -304,28 +304,70 @@ export class ProductController {
 
   async graphProducts(req, res) {
     try {
-      const dailyProducts = await prisma.products.groupBy({
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - 30); // Get data for last 30 days
+
+      // Get daily new products for last 30 days
+      const dailyNewProducts = await prisma.products.groupBy({
+        by: ['createdat'],
+        _count: {
+          id: true
+        },
+        where: {
+          createdat: {
+            gte: startDate
+          }
+        },
+        orderBy: {
+          createdat: 'asc'
+        }
+      });
+
+      // Get daily expired products for last 30 days
+      const dailyExpiredProducts = await prisma.products.groupBy({
         by: ['endDate'],
         _count: {
           id: true
+        },
+        where: {
+          endDate: {
+            gte: startDate
+          }
         },
         orderBy: {
           endDate: 'asc'
         }
       });
 
-      const chartData = dailyProducts.map(item => ({
-        date: item.endDate.toISOString().split('T')[0],
-        count: item._count.id
+      // Fill in missing dates with 0 counts
+      const dateRange = [];
+      for(let d = new Date(startDate); d <= new Date(); d.setDate(d.getDate() + 1)) {
+        dateRange.push(new Date(d).toISOString().split('T')[0]);
+      }
+
+      const newProductsData = dateRange.map(date => ({
+        date,
+        count: dailyNewProducts.find(item => 
+          item.createdat.toISOString().split('T')[0] === date
+        )?._count.id || 0
+      }));
+
+      const expiredProductsData = dateRange.map(date => ({
+        date,
+        count: dailyExpiredProducts.find(item =>
+          item.endDate?.toISOString().split('T')[0] === date
+        )?._count.id || 0
       }));
 
       return successResponse(res, 200, {
-        dailyExpiring: chartData
-      }, "Өдөр тутмын хугацаа нь дууссан бүтээгдэхүүний тоог амжилттай татаж авлаа");
+        dailyNew: newProductsData,
+        dailyExpiring: expiredProductsData,
+        dateRange
+      }, "Сүүлийн 30 өдрийн шинэ болон дууссан бүтээгдэхүүний тоог амжилттай татаж авлаа");
 
     } catch (error) {
-      console.error("Error getting expiring product counts:", error);
-      return errorResponse(res, 500, "Failed to get expiring product counts");
+      console.error("Error getting product counts:", error);
+      return errorResponse(res, 500, "Failed to get product counts");
     }
   }
 
