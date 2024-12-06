@@ -208,6 +208,127 @@ export class ProductController {
     }
   }
 
+
+  async totalProducts(req, res) {
+    try {
+      const totalProducts = await prisma.products.count();
+      
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const productsAddedToday = await prisma.products.count({
+        where: {
+          createdat: {
+            gte: today,
+            lt: new Date(today.getTime() + 24 * 60 * 60 * 1000)
+          }
+        }
+      });
+
+      const stats = {
+        totalProducts,
+        productsAddedToday
+      };
+
+      return successResponse(res, 200, stats, "Product statistics fetched successfully");
+    } catch (error) {
+      console.error("Error getting product statistics:", error);
+      return errorResponse(res, 500, "Failed to get product statistics");
+    }
+  }
+  async endProducts(req, res) {
+    try {
+      const now = new Date();
+      const page = parseInt(req.query.page) || 1;
+      const pageSize = parseInt(req.query.pageSize) || 10;
+      const skip = (page - 1) * pageSize;
+
+      let where = {
+        endDate: {
+          lt: now
+        }
+      };
+
+      // Add name filter if provided
+      if (req.query.name) {
+        where.ezemshigchiin_ner = {
+          contains: req.query.name,
+          mode: 'insensitive'
+        };
+      }
+
+      // Add end date range filter if provided
+      if (req.query.startDate && req.query.endDate) {
+        where.endDate = {
+          gte: new Date(req.query.startDate),
+          lte: new Date(req.query.endDate)
+        };
+      } else if (req.query.startDate) {
+        where.endDate = {
+          gte: new Date(req.query.startDate)
+        };
+      } else if (req.query.endDate) {
+        where.endDate = {
+          lte: new Date(req.query.endDate)
+        };
+      }
+
+      const expiredProducts = await prisma.products.findMany({
+        where,
+        skip,
+        take: pageSize,
+        orderBy: {
+          createdat: 'desc'
+        }
+      });
+
+      const totalExpired = await prisma.products.count({
+        where
+      });
+
+      const totalPages = Math.ceil(totalExpired / pageSize);
+
+      const response = {
+        total: totalExpired,
+        products: expiredProducts,
+        currentPage: page,
+        totalPages,
+        pageSize
+      };
+
+      return successResponse(res, 200, response, "Expired products fetched successfully");
+    } catch (error) {
+      console.error("Error getting expired products:", error);
+      return errorResponse(res, 500, "Failed to get expired products");
+    }
+  }
+
+  async graphProducts(req, res) {
+    try {
+      const dailyProducts = await prisma.products.groupBy({
+        by: ['endDate'],
+        _count: {
+          id: true
+        },
+        orderBy: {
+          endDate: 'asc'
+        }
+      });
+
+      const chartData = dailyProducts.map(item => ({
+        date: item.endDate.toISOString().split('T')[0],
+        count: item._count.id
+      }));
+
+      return successResponse(res, 200, {
+        dailyExpiring: chartData
+      }, "Өдөр тутмын хугацаа нь дууссан бүтээгдэхүүний тоог амжилттай татаж авлаа");
+
+    } catch (error) {
+      console.error("Error getting expiring product counts:", error);
+      return errorResponse(res, 500, "Failed to get expiring product counts");
+    }
+  }
+
   async getProductsOnSale(req, res) {
     try {
       const now = new Date();
