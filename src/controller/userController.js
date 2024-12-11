@@ -68,7 +68,7 @@ export class UserController {
         };
       }
       if (req.query.email) {
-        where.email = { 
+        where.email = {
           contains: req.query.email,
         };
       }
@@ -90,14 +90,14 @@ export class UserController {
   async create(req, res) {
     try {
       const { id } = req.params;
-      const { email, password, name } = req.body;
-      
+      const { email, password, name, role } = req.body;
+
       const hashedPassword = await bcrypt.hash(password, 10);
       const userData = {
         email,
         password: hashedPassword,
         name,
-        role: "user",
+        role,
       };
       if (id === "new") {
         const createUser = await prisma.user.create({
@@ -107,12 +107,27 @@ export class UserController {
       } else {
         const updateUser = await prisma.user.update({
           where: {
-            id: parseInt(id)
+            id: parseInt(id),
           },
-          data: userData
+          data: userData,
         });
         successResponse(res, 200, updateUser, "User updated successfully");
       }
+    } catch (error) {
+      console.log(error);
+      return errorResponse(res, 500, error.message);
+    }
+  }
+
+  async deleteUser(req, res) {
+    try {
+      const { id } = req.params;
+      const deleteUser = await prisma.user.delete({
+        where: {
+          id: parseInt(id),
+        },
+      });
+      successResponse(res, 200, deleteUser, "User deleted successfully");
     } catch (error) {
       console.log(error);
       return errorResponse(res, 500, error.message);
@@ -378,15 +393,13 @@ export class UserController {
   async deleteUser(req, res, next) {
     try {
       const { id } = req.params;
-      const user = await userModel.findById(id);
+      const user = await userModel.get(+id);
 
       if (!user) {
         return next(new ErrorHandler("User not found", 404));
       }
 
-      await user.deleteOne();
-      await redis.del(id);
-
+      await userModel.delete(+id);
       res.status(200).json({
         success: true,
         message: "User deleted successfully",
